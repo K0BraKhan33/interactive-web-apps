@@ -73,6 +73,9 @@ background: yellow;
 .counter__button:active{
     background-color: var(--color-medium-grey);
 }
+.counter__button:disabled{
+    color: red;
+}
 
 .counter__button_first{
 
