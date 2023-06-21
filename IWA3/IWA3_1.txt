@@ -1,0 +1,81 @@
+Q1.
+// configuration.js
+
+const company = 'ACME Inc.'
+const year = 2022
+
+@there are multipule ways that this can be redone such as and it is also missing semi colons:@
+
+/*configuration.js*/
+
+let company = 'ACME Inc.';
+let year = 2022;
+
+OR:
+
+/*configuration.js*/
+
+var company = 'ACME Inc.';
+var year = 2022;
+
+
+
+
+Q2.
+// scripts.js
+
+import company form 'configuration'
+import year form 'configuration'
+
+const message = '© ' + company + ' (' + year + ')'
+document.querySelector('footer').innerText = message
+
+@from what i know the import function pulls var from files or locations, so the problem her is a simple miss spelling of from:@
+
+import company from 'configuration'
+import year from 'configuration'
+
+const message = '© ' + company + ' (' + year + ')'
+document.querySelector('footer').innerText = message
+
+
+
+
+
+
+
+
+
+Q3
+<!-- index.html -->
+
+<html>
+	<head>
+		<scripts scr="./scripts">
+  </head>
+
+	<body>
+		<h1>Welcome</h1>
+		<p>This is our website</p>
+	</body>
+
+	<footer>Loading...</footer>
+</html>
+
+@This has a small typo error at the scripts function where scr should be src, I would also personaly move the scripts out of my body:@
+<html>
+	<head>
+	
+  </head>
+
+	<body>
+		<h1>Welcome</h1>
+		<p>This is our website</p>
+	</body>
+ 	<scripts src="./scripts">   
+
+	<footer>Loading...</footer>
+</html>
+
+
+
