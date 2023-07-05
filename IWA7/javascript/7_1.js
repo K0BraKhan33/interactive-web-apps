@@ -1,5 +1,5 @@
-const value = "3"
-console.log(value + 4 + value)
+//const value = "3"
+//console.log(value + 4 + value)
 
 /* imple mastake is yo use " " 
 this make anything a string veriable which acts like the alpabete a-z
