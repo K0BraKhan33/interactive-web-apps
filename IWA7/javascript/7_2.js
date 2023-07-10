@@ -26,3 +26,5 @@ if (nickname) {
 } else {
   console.log("Good morning!");
 }
+
+console.log(`Good Morning, ${nickname || firstname}!`);
