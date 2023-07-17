@@ -6,7 +6,7 @@ let calculated = '1';
 
 const logCalc = () => {
   const isString = typeof calculated === 'string' && !isNaN(calculated);
-  //place pars int on firts calc for proper checker
+  //place pars int on first calc for proper checker
   const calculatedAsNumber = isString ? parseInt(calculated) : calculated;
   //not toString but String
   calculated = String(calculatedAsNumber + 1);
