@@ -8,6 +8,7 @@ import { html, updateDraggingHtml, createOrderHtml } from './view.js';
  * Handler for the "handleDragStart" event when a user starts dragging an order.
  * This sets the "source" in the app state to the column from which the order is dragged.
  *
+ * 
  * @param {Event} event
  */
 const handleDragStart = (event) => {
