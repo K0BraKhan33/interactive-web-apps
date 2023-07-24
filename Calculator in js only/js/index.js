@@ -91,7 +91,7 @@ function ac(){
 function plus(){
 
     iTotal=iTotal+inum;
-    console.log('total is now:'+ iTotal +' was added:'+inum)
+    console.log('total is now:'+ iTotal +' was added by:'+inum)
     console.log('+');
     calculate();
     console.log(iTotal);
@@ -104,7 +104,7 @@ function plus(){
 function subtract(){
 
     iTotal=iTotal-inum;
-    console.log('total is now:'+ iTotal +' was added:'+inum)
+    console.log('total is now:'+ iTotal +' was subtracted by:'+inum)
     console.log('-');
     calculate();
     console.log(iTotal);
@@ -116,7 +116,7 @@ function subtract(){
 function total(){
 
     iTotal=iTotal;
-    console.log('total is now:'+ iTotal +' was added:'+inum)
+    console.log('total is now:'+ iTotal)
     console.log('=');
     calculate();
     console.log(iTotal);
@@ -128,7 +128,7 @@ function total(){
 function multiply(){
 
     iTotal=iTotal*inum;
-    console.log('total is now:'+ iTotal +' was added:'+inum)
+    console.log('total is now:'+ iTotal +' was multiplyed by:'+inum)
     console.log('*');
     calculate();
     console.log(iTotal);
@@ -139,7 +139,7 @@ function multiply(){
 function devide(){
 
     iTotal=iTotal/inum;
-    console.log('total is now:'+ iTotal +' was devided:'+inum)
+    console.log('total is now:'+ iTotal +' was devided by:'+inum)
     console.log('/');
     calculate();
     console.log(iTotal);

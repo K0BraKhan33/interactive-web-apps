@@ -47,7 +47,7 @@ const createData = () => {
         })
 
         for (const dayIndex of days) {
-            const day = (weekIndex * 7)  + dayIndex - startDay + 1
+            const day = (weekIndex * 7)  + (dayIndex - startDay) + 1
             const isValid = day > 0 && day <= daysInMonth
 
             result[weekIndex].days.push({
@@ -86,10 +86,10 @@ const createHtml = (data) => {
             
 			let classString = 'table__cell';
 
-            if (isToday) classString = `table__cell_today`
-            if (isWeekend) classString = `table__cell_week`
-            if (isAlternate) classString = `table__cell_alterante`
-            inner = addCell(inner,classString, value)
+            if (isToday) classString = `table__cell_today`;
+            if (isWeekend) classString = `table__cell_week`;
+            if (isAlternate) classString = `table__cell_alterante`;
+            inner = addCell(inner,classString, value);
         }
 
         result += `
