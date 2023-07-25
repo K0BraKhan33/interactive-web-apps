@@ -46,8 +46,8 @@ for (const { author, image, title, id } of extracted) {
   fragment.appendChild(preview);
   console.log(preview);
 }
-
-document.querySelector('[data-list-items]').appendChild(fragment);
+let sender= document.querySelector('[data-list-items]');
+sender.appendChild(fragment);
 
 const genresFragment = document.createDocumentFragment();
 let element = document.createElement('option');
