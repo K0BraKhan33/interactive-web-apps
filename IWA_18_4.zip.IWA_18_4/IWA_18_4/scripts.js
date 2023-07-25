@@ -8,7 +8,6 @@ import { html, updateDraggingHtml, createOrderHtml } from './view.js';
  * Handler for the "handleDragStart" event when a user starts dragging an order.
  * This sets the "source" in the app state to the column from which the order is dragged.
  *
- * 
  * @param {Event} event
  */
 const handleDragStart = (event) => {
@@ -118,8 +117,21 @@ const handleEditToggle = (event) => {
 };
 
 /**
+ * Handler for the "handleEditStatusChange" event when the user changes the status in the "Edit Order" overlay.
+ * This updates the order's status in the overlay.
+ *
+ * @param {Event} event
+ */
+const handleEditStatusChange = (event) => {
+  const orderId = html.edit.id.value;
+  const newStatus = event.target.value;
+  state.orders[orderId].column = newStatus;
+};
+
+/**
  * Handler for the "handleEditSubmit" event when the user submits the "Edit Order" form.
- * This updates the order with the entered data and closes the "Edit Order" overlay.
+ * This updates the order with the entered data, closes the "Edit Order" overlay,
+ * and moves the order to the new column if the status has changed.
  *
  * @param {Event} event
  */
@@ -210,6 +222,7 @@ html.other.grid.addEventListener('click', handleEditToggle);
 html.edit.cancel.addEventListener('click', handleEditToggle);
 html.edit.form.addEventListener('submit', handleEditSubmit);
 html.edit.delete.addEventListener('click', handleDelete);
+html.edit.column.addEventListener('change', handleEditStatusChange);
 
 html.help.cancel.addEventListener('click', handleHelpToggle);
 html.other.help.addEventListener('click', handleHelpToggle);
