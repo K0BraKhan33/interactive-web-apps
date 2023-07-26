@@ -1,11 +1,10 @@
-//scripts.js
 document.addEventListener('DOMContentLoaded', function () {
   console.log('test');
   let matches = books;
   let page = 1;
   const booksPerPage = 36;
+  let currentOverlay = null; // Variable to keep track of the currently open overlay
 
-  // Function to create a single book preview element
   function createPreview(book, authors) {
     const { author, image, title, id } = book;
     const preview = document.createElement('button');
@@ -23,36 +22,53 @@ document.addEventListener('DOMContentLoaded', function () {
     return preview;
   }
 
-  // Function to show book details
   function showBookDetails(event) {
+    document.body.removeChild(overlay);
+    document.body.removeChild(backdrop);
+    currentOverlay = null;
     const previewButton = event.target.closest('.preview');
-    if (!previewButton) return; // Return if the target is not a .preview button
+    if (!previewButton) return;
 
     const bookId = previewButton.getAttribute('data-preview');
     const book = books.find((book) => book.id === bookId);
-    if (!book) return; // Return if the book with the specified ID is not found
+    if (!book) return;
 
-    const bookDetailsElement = document.querySelector('[data-book-details]');
-    if (!bookDetailsElement) return; // Return if the book details element is not found
+    const { author, image, title, description } = book;
 
-    const { author, image, title, description, genres } = book;
+    const overlay = document.createElement('div');
+    overlay.classList.add('overlay');
 
-    // Update the book details element with the selected book's information
-    bookDetailsElement.innerHTML = `
-      <img class="book-details__image" src="${image}" />
-      <div class="book-details__info">
-        <h3 class="book-details__title">${title}</h3>
-        <div class="book-details__author">By ${authors[author]}</div>
-        <div class="book-details__genres">Genres: ${genres.map(genreId => genres[genreId]).join(', ')}</div>
-        <div class="book-details__description">${description}</div>
-      </div>
+    overlay.innerHTML = `
+      <img class="overlay__image" src="${image}" alt="${title}" />
+      <h2 class="overlay__title">${title}</h2>
+      <p class="overlay__author">By ${authors[author]}</p>
+      <p class="overlay__description">${description}</p>
+      <button class="overlay__close">Close</button>
     `;
 
-    // Show the book details
-    bookDetailsElement.classList.add('show');
+    const backdrop = document.createElement('div');
+    backdrop.classList.add('backdrop');
+
+    // Close the previous overlay before opening a new one
+    if (currentOverlay) {
+      document.body.removeChild(currentOverlay);
+      document.body.removeChild(document.querySelector('.backdrop'));
+    }
+
+    currentOverlay = overlay;
+
+    // Close the overlay and backdrop when the close button is clicked
+    const closeButton = overlay.querySelector('.overlay__close');
+    closeButton.addEventListener('click', () => {
+      document.body.removeChild(overlay);
+      document.body.removeChild(backdrop);
+      currentOverlay = null;
+    });
+
+    document.body.appendChild(overlay);
+    document.body.appendChild(backdrop);
   }
 
-  // Sets the color
   const css = {
     day: {
       dark: '10, 10, 20',
@@ -64,11 +80,9 @@ document.addEventListener('DOMContentLoaded', function () {
     },
   };
 
-  // Gets the relative info per book
   const fragment = document.createDocumentFragment();
   const extracted = books.slice(0, booksPerPage);
 
-  // Loop to create the previews
   for (const { author, image, title, id } of extracted) {
     const preview = createPreview({ author, image, title, id }, authors);
     fragment.appendChild(preview);
@@ -113,13 +127,6 @@ document.addEventListener('DOMContentLoaded', function () {
   document.documentElement.style.setProperty('--color-dark', css[theme].dark);
   document.documentElement.style.setProperty('--color-light', css[theme].light);
 
-  function handleThemeChange(event) {
-    const selectedTheme = event.target.value;
-    document.documentElement.style.setProperty('--color-dark', css[selectedTheme].dark);
-    document.documentElement.style.setProperty('--color-light', css[selectedTheme].light);
-  }
-
-  // Function to show the settings dialog
   function showSettingsDialog() {
     const settingsDialog = document.querySelector('[data-settings-overlay]');
     if (settingsDialog) {
@@ -127,7 +134,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  // Function to close the settings dialog
   function closeSettingsDialog() {
     const settingsDialog = document.querySelector('[data-settings-overlay]');
     if (settingsDialog) {
@@ -135,13 +141,11 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  // Event listener for the settings button
   const settingsButton = document.querySelector('[data-header-settings]');
   if (settingsButton) {
     settingsButton.addEventListener('click', showSettingsDialog);
   }
 
-  // Event listener for the settings form
   const settingsForm = document.querySelector('[data-settings-form]');
   if (settingsForm) {
     settingsForm.addEventListener('submit', (event) => {
@@ -149,35 +153,21 @@ document.addEventListener('DOMContentLoaded', function () {
       const formData = new FormData(event.target);
       const theme = formData.get('theme');
       handleThemeChange({ target: { value: theme } });
-      closeSettingsDialog();
+      closeSettingsDialog();  
     });
   }
 
-  // Event listener for the cancel button in the settings dialog
   const cancelButton = document.querySelector('[data-settings-cancel]');
   if (cancelButton) {
     cancelButton.addEventListener('click', closeSettingsDialog);
   }
 
   document.querySelector('[data-list-button]').textContent = `Show more (${matches.length - (page * booksPerPage) > 0 ? matches.length - (page * booksPerPage) : 0})`;
-
   document.querySelector('[data-list-button]').disabled = !(matches.length - page * booksPerPage > 0);
 
-  // Event listeners
   const previews = document.querySelectorAll(".preview");
   previews.forEach(preview => { 
-    preview.addEventListener('click', (event) => {
-      const bookId = preview.getAttribute('data-preview');
-      console.log(bookId);
-      // Here, you can add the code to show the overlay with book details
-      const book = books.find((book) => book.id === bookId);
-      if (book) {
-        console.log("Book Title:", book.title);
-        console.log("Author:", authors[book.author]);
-        console.log("Description:", book.description);
-        // Add your code to display the overlay with book details
-      }
-    });
+    preview.addEventListener('click', showBookDetails);
   });
 
   document.querySelector('[data-list-button]').addEventListener('click', () => {
@@ -235,6 +225,7 @@ document.addEventListener('DOMContentLoaded', function () {
         result.push(book);
       }
     }
+
     console.clear();
     console.warn('Searching in progress...');
     if (result.length < 1) {
@@ -245,7 +236,7 @@ document.addEventListener('DOMContentLoaded', function () {
       console.warn('Found Items');
     }
 
-    document.querySelector('[data-list-items]').innerHTML = ''; // Clear the previous results
+    document.querySelector('[data-list-items]').innerHTML = ''; 
     const fragment = document.createDocumentFragment();
     const extracted = result.slice(0, booksPerPage);
 
@@ -288,42 +279,36 @@ document.addEventListener('DOMContentLoaded', function () {
 
   const bookElements = document.querySelectorAll('.preview');
 
-  // Add event listener to each book element
   bookElements.forEach(bookElement => {
     bookElement.addEventListener('click', () => {
-      // Get the book ID from the "data-book-id" attribute
-      const bookId = bookElement.dataset.bookId;
-  
-      // Find the book details in the "books" array using the bookId
+      const bookId = bookElement.dataset.preview; // Fixed: Changed "data-book-id" to "data-preview"
       const book = books.find(book => book.id === bookId);
-  
-      // Create an overlay element and populate it with book details
+
       const overlay = document.createElement('div');
       overlay.classList.add('overlay');
+
       overlay.innerHTML = `
-        <div class="overlay__content">
-          <img class="overlay__image" src="${book.image}" alt="${book.title}" />
-          <h2 class="overlay__title">${book.title}</h2>
-          <p class="overlay__data">Author: ${authors[book.author]}</p>
-          <p class="overlay__data_secondary">Description: ${book.description}</p>
-          <!-- Add other book details as needed -->
-        </div>
+        <img class="overlay__image" src="${book.image}" alt="${book.title}" />
+        <h2 class="overlay__title">${book.title}</h2>
+        <p class="overlay__author">By ${authors[book.author]}</p>
+        <p class="overlay__description">${book.description}</p>
+        <button class="overlay__close">Close</button>
       `;
-  
-      // Append the overlay to the document body
-      document.body.appendChild(overlay);
-  
-      // Add a click event listener to the backdrop to close the overlay when clicked
+
       const backdrop = document.createElement('div');
       backdrop.classList.add('backdrop');
-      backdrop.addEventListener('click', () => {
+
+      const closeButton = overlay.querySelector('.overlay__close');
+      closeButton.addEventListener('click', () => {
         document.body.removeChild(overlay);
         document.body.removeChild(backdrop);
+        currentOverlay = null;
       });
-  
-      // Append the backdrop to the document body
+
+      document.body.appendChild(overlay);
       document.body.appendChild(backdrop);
+
+      currentOverlay = overlay; // Update the currentOverlay variable
     });
   });
-
 });
