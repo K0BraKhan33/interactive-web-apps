@@ -23,9 +23,12 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function showBookDetails(event) {
-    document.body.removeChild(overlay);
-    document.body.removeChild(backdrop);
-    currentOverlay = null;
+    // Check if there is an existing overlay
+    if (currentOverlay) {
+      document.body.removeChild(currentOverlay);
+      document.body.removeChild(document.querySelector('.backdrop'));
+    }
+
     const previewButton = event.target.closest('.preview');
     if (!previewButton) return;
 
@@ -48,12 +51,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const backdrop = document.createElement('div');
     backdrop.classList.add('backdrop');
-
-    // Close the previous overlay before opening a new one
-    if (currentOverlay) {
-      document.body.removeChild(currentOverlay);
-      document.body.removeChild(document.querySelector('.backdrop'));
-    }
 
     currentOverlay = overlay;
 
@@ -127,6 +124,12 @@ document.addEventListener('DOMContentLoaded', function () {
   document.documentElement.style.setProperty('--color-dark', css[theme].dark);
   document.documentElement.style.setProperty('--color-light', css[theme].light);
 
+  function handleThemeChange(event) {
+    const selectedTheme = event.target.value;
+    document.documentElement.style.setProperty('--color-dark', css[selectedTheme].dark);
+    document.documentElement.style.setProperty('--color-light', css[selectedTheme].light);
+  }
+
   function showSettingsDialog() {
     const settingsDialog = document.querySelector('[data-settings-overlay]');
     if (settingsDialog) {
@@ -153,7 +156,7 @@ document.addEventListener('DOMContentLoaded', function () {
       const formData = new FormData(event.target);
       const theme = formData.get('theme');
       handleThemeChange({ target: { value: theme } });
-      closeSettingsDialog();  
+      closeSettingsDialog();
     });
   }
 
@@ -166,7 +169,7 @@ document.addEventListener('DOMContentLoaded', function () {
   document.querySelector('[data-list-button]').disabled = !(matches.length - page * booksPerPage > 0);
 
   const previews = document.querySelectorAll(".preview");
-  previews.forEach(preview => { 
+  previews.forEach(preview => {
     preview.addEventListener('click', showBookDetails);
   });
 
@@ -236,7 +239,7 @@ document.addEventListener('DOMContentLoaded', function () {
       console.warn('Found Items');
     }
 
-    document.querySelector('[data-list-items]').innerHTML = ''; 
+    document.querySelector('[data-list-items]').innerHTML = '';
     const fragment = document.createDocumentFragment();
     const extracted = result.slice(0, booksPerPage);
 
@@ -281,7 +284,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   bookElements.forEach(bookElement => {
     bookElement.addEventListener('click', () => {
-      const bookId = bookElement.dataset.preview; // Fixed: Changed "data-book-id" to "data-preview"
+      const bookId = bookElement.dataset.preview;
       const book = books.find(book => book.id === bookId);
 
       const overlay = document.createElement('div');
