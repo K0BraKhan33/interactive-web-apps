@@ -1,9 +1,8 @@
 document.addEventListener('DOMContentLoaded', function () {
-  console.log('test');
   let matches = books;
   let page = 1;
   const booksPerPage = 36;
-  let currentOverlay = null; // Variable to keep track of the currently open overlay
+  let currentOverlay = null;
 
   function createPreview(book, authors) {
     const { author, image, title, id } = book;
@@ -23,7 +22,6 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function showBookDetails(event) {
-    // Check if there is an existing overlay
     if (currentOverlay) {
       document.body.removeChild(currentOverlay);
       document.body.removeChild(document.querySelector('.backdrop'));
@@ -41,6 +39,12 @@ document.addEventListener('DOMContentLoaded', function () {
     const overlay = document.createElement('div');
     overlay.classList.add('overlay');
 
+    overlay.style.position = 'fixed';
+    overlay.style.left = '50%';
+    overlay.style.bottom = '0';
+    overlay.style.transform = 'translateX(-50%)';
+    overlay.style.maxWidth = '80%';
+
     overlay.innerHTML = `
       <img class="overlay__image" src="${image}" alt="${title}" />
       <h2 class="overlay__title">${title}</h2>
@@ -49,18 +53,38 @@ document.addEventListener('DOMContentLoaded', function () {
       <button class="overlay__close">Close</button>
     `;
 
+    const overlayImage = overlay.querySelector('.overlay__image');
+    if (overlayImage) {
+      overlayImage.style.maxWidth = '100%';
+      overlayImage.style.marginBottom = '1rem';
+    }
+
+    const overlayTitle = overlay.querySelector('.overlay__title');
+    if (overlayTitle) {
+      overlayTitle.style.textAlign = 'center';
+    }
+
+    const overlayAuthor = overlay.querySelector('.overlay__author');
+    if (overlayAuthor) {
+      overlayAuthor.style.textAlign = 'center';
+    }
+
+    const overlayDescription = overlay.querySelector('.overlay__description');
+    if (overlayDescription) {
+      overlayDescription.style.textAlign = 'center';
+    }
+
+    const closeButton = overlay.querySelector('.overlay__close');
+    closeButton.addEventListener('click', () => {
+      document.body.removeChild(overlay);
+      document.body.removeChild(document.querySelector('.backdrop'));
+      currentOverlay = null;
+    });
+
     const backdrop = document.createElement('div');
     backdrop.classList.add('backdrop');
 
     currentOverlay = overlay;
-
-    // Close the overlay and backdrop when the close button is clicked
-    const closeButton = overlay.querySelector('.overlay__close');
-    closeButton.addEventListener('click', () => {
-      document.body.removeChild(overlay);
-      document.body.removeChild(backdrop);
-      currentOverlay = null;
-    });
 
     document.body.appendChild(overlay);
     document.body.appendChild(backdrop);
