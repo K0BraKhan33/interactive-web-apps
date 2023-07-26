@@ -1,8 +1,15 @@
-// scripts.js
-// (Main script with event handlers)
+// data.js (Your implementation of data.js)
+// ... (Your implementation of data.js)
 
+// view.js (Your implementation of view.js)
+// ... (Your implementation of view.js)
+
+// scripts.js (Main script with event handlers)
 import { TABLES, COLUMNS, state, updateDragging, createOrderData } from './data.js';
 import { html, updateDraggingHtml, createOrderHtml } from './view.js';
+
+let creatingNewOrder = false; // Flag to track if creating a new order
+let lastDraggedOrderId = null; // Variable to keep track of the last dragged order's ID
 
 /**
  * Handler for the "handleDragStart" event when a user starts dragging an order.
@@ -14,6 +21,7 @@ const handleDragStart = (event) => {
   const orderId = event.target.dataset.id;
   const sourceColumn = event.currentTarget.dataset.column;
   event.dataTransfer.setData('text/plain', orderId);
+
   updateDragging({ source: sourceColumn });
 };
 
@@ -24,6 +32,13 @@ const handleDragStart = (event) => {
  * @param {Event} event
  */
 const handleDragEnd = (event) => {
+  const id = event.target.dataset.id;
+
+  // Store the ID of the last dragged order
+  lastDraggedOrderId = id;
+
+  html.edit.overlay.open = true;
+  console.log(id);
   updateDragging({});
   updateDraggingHtml({});
 };
@@ -67,7 +82,8 @@ const clearAddForm = () => {
 
 /**
  * Handler for the "handleAddSubmit" event when the user submits the "Add Order" form.
- * This adds a new order to the "Ordered" column and closes the "Add Order" overlay.
+ * This adds a new order to the "Ordered" column and sets up a click event listener on the new order element
+ * to trigger the "Edit Order" overlay for editing the newly created order.
  *
  * @param {Event} event
  */
@@ -75,6 +91,7 @@ const handleAddSubmit = (event) => {
   event.preventDefault();
   const title = html.add.title.value;
   const table = html.add.table.value;
+  html.edit.overlay.open = false;
 
   if (!title || !table) {
     alert('Please enter both title and table.');
@@ -83,9 +100,22 @@ const handleAddSubmit = (event) => {
 
   const newOrder = createOrderData({ title, table, column: 'ordered' });
   const newOrderHtml = createOrderHtml(newOrder);
+
+  // Add event listener to the new order element to trigger "Edit Order" overlay
+  newOrderHtml.addEventListener('click', (event) => {
+    handleEditToggle(event);
+  });
+
   html.columns.ordered.appendChild(newOrderHtml);
-  html.add.overlay.open = false;
-  clearAddForm();
+
+  // Open the "Edit Order" overlay to allow editing of the newly created order
+  html.edit.title.value = newOrder.title;
+  html.edit.table.value = newOrder.table;
+  html.edit.column.value = newOrder.column;
+  html.edit.id.value = newOrder.id;
+
+  // Set the flag to indicate that a new order is being created
+  creatingNewOrder = true;
 };
 
 /**
@@ -117,21 +147,8 @@ const handleEditToggle = (event) => {
 };
 
 /**
- * Handler for the "handleEditStatusChange" event when the user changes the status in the "Edit Order" overlay.
- * This updates the order's status in the overlay.
- *
- * @param {Event} event
- */
-const handleEditStatusChange = (event) => {
-  const orderId = html.edit.id.value;
-  const newStatus = event.target.value;
-  state.orders[orderId].column = newStatus;
-};
-
-/**
  * Handler for the "handleEditSubmit" event when the user submits the "Edit Order" form.
- * This updates the order with the entered data, closes the "Edit Order" overlay,
- * and moves the order to the new column if the status has changed.
+ * This updates the order with the entered data and closes the "Edit Order" overlay.
  *
  * @param {Event} event
  */
@@ -141,24 +158,35 @@ const handleEditSubmit = (event) => {
   const title = html.edit.title.value;
   const table = html.edit.table.value;
   const column = html.edit.column.value;
+  const orderElement = document.querySelector(`[data-id="${event.target.dataset.id}"]`);
 
-  if (!title || !table) {
-    alert('Please enter both title and table.');
-    return;
-  }
+  // Check if the last dragged order's ID matches the current order ID
+  if (id === lastDraggedOrderId) {
+    handleDelete(id); // If it matches, delete the order
+  } else {
+    // If it doesn't match, update the order with the entered data
+    delete state.orders[id];
 
-  const updatedOrder = createOrderData({ title, table, column });
-  state.orders[id] = updatedOrder;
-  const updatedOrderHtml = createOrderHtml(updatedOrder);
-  html.columns[column].appendChild(updatedOrderHtml);
+    if (!title || !table) {
+      alert('Please enter both title and table.');
+      return;
+    }
 
-  const previousColumn = state.orders[id].column;
-  if (previousColumn !== column) {
-    const orderElement = document.querySelector(`[data-id="${id}"]`);
-    orderElement.remove();
+    const updatedOrder = createOrderData({ title, table, column });
+    state.orders[id] = updatedOrder;
+    const updatedOrderHtml = createOrderHtml(updatedOrder);
+
+    const previousColumn = state.orders[id].column;
+    if (previousColumn !== column) {
+      const orderElement = document.querySelector(`[data-id="${id}"]`);
+      orderElement.remove();
+    }
+
+    html.columns[column].appendChild(updatedOrderHtml);
   }
 
   html.edit.overlay.open = false;
+  lastDraggedOrderId = null; // Reset the variable for the next drag operation
 };
 
 /**
@@ -198,15 +226,18 @@ const handleDrop = (event) => {
   event.preventDefault();
   const orderId = event.dataTransfer.getData('text/plain');
   const overColumn = event.currentTarget.dataset.column;
-  const sourceColumn = state.orders[orderId].column;
+  const sourceColumn = state.orders[orderId]?.column; // Use optional chaining to handle undefined case
 
-  if (overColumn !== sourceColumn) {
-    // Move the order to the new column
-    const orderElement = document.querySelector(`[data-id="${orderId}"]`);
-    html.columns[overColumn].appendChild(orderElement);
+  // Check if the orderId and sourceColumn are valid
+  if (orderId && sourceColumn) {
+    if (overColumn !== sourceColumn) {
+      // Move the order to the new column
+      const orderElement = document.querySelector(`[data-id="${orderId}"]`);
+      html.columns[overColumn].appendChild(orderElement);
 
-    // Update the app state with the new column for the order
-    state.orders[orderId].column = overColumn;
+      // Update the app state with the new column for the order
+      state.orders[orderId].column = overColumn;
+    }
   }
 
   updateDragging({});
@@ -218,11 +249,16 @@ html.add.cancel.addEventListener('click', handleAddToggle);
 html.other.add.addEventListener('click', handleAddToggle);
 html.add.form.addEventListener('submit', handleAddSubmit);
 
-html.other.grid.addEventListener('click', handleEditToggle);
+// The event listener for clicking on existing orders has been added here
+for (const orderElement of document.querySelectorAll('[data-id]')) {
+  orderElement.addEventListener('click', (event) => {
+    handleEditToggle(event);
+  });
+}
+
 html.edit.cancel.addEventListener('click', handleEditToggle);
 html.edit.form.addEventListener('submit', handleEditSubmit);
 html.edit.delete.addEventListener('click', handleDelete);
-html.edit.column.addEventListener('change', handleEditStatusChange);
 
 html.help.cancel.addEventListener('click', handleHelpToggle);
 html.other.help.addEventListener('click', handleHelpToggle);
@@ -236,6 +272,14 @@ for (const htmlArea of Object.values(html.area)) {
   htmlArea.addEventListener('dragover', handleDragOver);
   htmlArea.addEventListener('drop', handleDrop);
 }
+
+document.querySelector('[data-add-cancel]').addEventListener('click', (event) => {
+  html.edit.overlay.open = false;
+});
+
+document.querySelector('[data-edit-cancel]').addEventListener('click', (event) => {
+  html.edit.overlay.open = false;
+});
 
 // Set focus on "Add Order" button when the page loads
 html.other.add.focus();
