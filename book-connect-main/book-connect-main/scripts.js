@@ -1,3 +1,4 @@
+//scripts.js
 document.addEventListener('DOMContentLoaded', function () {
   console.log('test');
   let matches = books;
@@ -112,6 +113,12 @@ document.addEventListener('DOMContentLoaded', function () {
   document.documentElement.style.setProperty('--color-dark', css[theme].dark);
   document.documentElement.style.setProperty('--color-light', css[theme].light);
 
+  function handleThemeChange(event) {
+    const selectedTheme = event.target.value;
+    document.documentElement.style.setProperty('--color-dark', css[selectedTheme].dark);
+    document.documentElement.style.setProperty('--color-light', css[selectedTheme].light);
+  }
+
   // Function to show the settings dialog
   function showSettingsDialog() {
     const settingsDialog = document.querySelector('[data-settings-overlay]');
@@ -142,9 +149,11 @@ document.addEventListener('DOMContentLoaded', function () {
       const formData = new FormData(event.target);
       const theme = formData.get('theme');
       handleThemeChange({ target: { value: theme } });
-      closeSettingsDialog();  
+      closeSettingsDialog();
     });
   }
+
+  // Event listener for the cancel button in the settings dialog
   const cancelButton = document.querySelector('[data-settings-cancel]');
   if (cancelButton) {
     cancelButton.addEventListener('click', closeSettingsDialog);
