@@ -177,6 +177,8 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
+//
+
   const cancelButton = document.querySelector('[data-settings-cancel]');
   if (cancelButton) {
     cancelButton.addEventListener('click', closeSettingsDialog);
