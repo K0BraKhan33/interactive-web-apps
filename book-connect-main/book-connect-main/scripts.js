@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', function () {
   let matches = books;
   let page = 1;
   const booksPerPage = 36;
-  let currentOverlay = null;
+  let currentOverlay = null; // Variable to keep track of the currently open overlay
 
   function createPreview(book, authors) {
     const { author, image, title, id, published } = book;
@@ -27,6 +27,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function showBookDetails(event) {
+    // Check if there is an existing overlay
     if (currentOverlay) {
       document.body.removeChild(currentOverlay);
       document.body.removeChild(document.querySelector('.backdrop'));
@@ -50,62 +51,32 @@ document.addEventListener('DOMContentLoaded', function () {
     const overlay = document.createElement('div');
     overlay.classList.add('overlay');
 
-    overlay.style.position = 'fixed';
-    overlay.style.left = '50%';
-    overlay.style.bottom = '0';
-    overlay.style.transform = 'translateX(-50%)';
-    overlay.style.maxWidth = '80%';
-
     overlay.innerHTML = `
     <div class="overlay__content">
     <img class="overlay__blur" src="${image}" alt="${title}" />
     <img class="overlay__image" src="${image}" alt="${title}" />
-    <div class="overlay__data">
+    
       <h2 class="overlay__title">${title}</h2>
       <p class="overlay__author">By ${authors[author]} (${publicationDate})</p>
+      <div class="overlay__data">
       <div class="overlay__description">${description}</div>
     </div class="overlay__button_primary">
     <button class="overlay__button">Close</button>
   </div>
 `;
 
-    const overlayImage = overlay.querySelector('.overlay__image');
-    if (overlayImage) {
-      overlayImage.style.maxWidth = '100%';
-      overlayImage.style.marginBottom = '1rem';
-    }
-
-    const overlayTitle = overlay.querySelector('.overlay__title');
-    if (overlayTitle) {
-      overlayTitle.style.textAlign = 'center';
-    }
-
-    const overlayAuthor = overlay.querySelector('.overlay__author');
-    if (overlayAuthor) {
-      overlayAuthor.style.textAlign = 'center';
-    }
-
-    const overlayDescription = overlay.querySelector('.overlay__description');
-    if (overlayDescription) {
-      overlayDescription.style.textAlign = 'center';
-    }
-
-<<<<<<< HEAD
-    const closeButton = overlay.querySelector('.overlay__close');
-=======
-    // Close the overlay and backdrop when the close button is clicked
-    const closeButton = overlay.querySelector('.overlay__button');
->>>>>>> 6ff4ce214f9734c31a1254c23a946570df66a4e7
-    closeButton.addEventListener('click', () => {
-      document.body.removeChild(overlay);
-      document.body.removeChild(document.querySelector('.backdrop'));
-      currentOverlay = null;
-    });
-
     const backdrop = document.createElement('div');
     backdrop.classList.add('backdrop');
 
     currentOverlay = overlay;
+
+    // Close the overlay and backdrop when the close button is clicked
+    const closeButton = overlay.querySelector('.overlay__button');
+    closeButton.addEventListener('click', () => {
+      document.body.removeChild(overlay);
+      document.body.removeChild(backdrop);
+      currentOverlay = null;
+    });
 
     document.body.appendChild(overlay);
     document.body.appendChild(backdrop);
