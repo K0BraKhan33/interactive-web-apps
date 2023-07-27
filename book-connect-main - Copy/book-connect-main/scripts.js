@@ -55,9 +55,10 @@ document.addEventListener('DOMContentLoaded', function () {
     <div class="overlay__content">
     <img class="overlay__blur" src="${image}" alt="${title}" />
     <img class="overlay__image" src="${image}" alt="${title}" />
-    <div class="overlay__data">
+    
       <h2 class="overlay__title">${title}</h2>
       <p class="overlay__author">By ${authors[author]} (${publicationDate})</p>
+      <div class="overlay__data">
       <div class="overlay__description">${description}</div>
     </div class="overlay__button_primary">
     <button class="overlay__button">Close</button>

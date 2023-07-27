@@ -365,12 +365,13 @@ option {
   letter-spacing: -0.1px;
   max-width: 25rem;
   margin: 0 auto;
-  color: rgba(var(--color-dark), 0.8)
+  color: rgba(var(--color-dark), 0.8);
+  padding-top: 20%;
 }
 
 .overlay__blur {
-  width: 60%;
   height: 200px;
+  width:53%;
   filter: blur(10px);
   opacity: 0.5;
   transform: scale(2);
@@ -387,14 +388,14 @@ option {
 }
 
 .overlay__data {
+  height: 20%;
   font-size: 0.9;
   display: -webkit-box;
   -webkit-line-clamp: 6;
   -webkit-box-orient: vertical;  
   overflow-y: scroll;
-  
-  padding-top: 20%;
-  padding-bottom: 80%;
+  padding-bottom: 2vw;
+  margin-bottom: 2vw;
   color: rgba(var(--color-dark), 0.8)
 }
 
