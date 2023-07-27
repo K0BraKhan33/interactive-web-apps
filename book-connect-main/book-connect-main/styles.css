@@ -392,7 +392,8 @@ option {
   font-size: 0.9;
   display: -webkit-box;
   -webkit-line-clamp: 6;
-  -webkit-box-orient: vertical;  
+  -webkit-box-orient: vertical; 
+  overflow-x: hidden; 
   overflow-y: scroll;
   padding-bottom: 2vw;
   margin-bottom: 2vw;
